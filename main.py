@@ -49,6 +49,7 @@ for category, catUrl in categories.items():
    
 
 
+
 def write_to_csv() :
     try:
         with open('data.csv', 'w') as csvfile:
