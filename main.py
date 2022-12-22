@@ -27,6 +27,8 @@ titles_arr = []
 prices_arr = []
 links_arr = []
 cat_arr = []
+stocks_arr = []
+ratings_arr = []
 # querying categories url 
 for category, catUrl in categories.items():
     htmlResponse = requests.get(catUrl)
@@ -44,26 +46,37 @@ for category, catUrl in categories.items():
     #link
     link = 'http://books.toscrape.com/catalogue/' + url.get('href').replace("../../../", "")
     links_arr.append(link)
-
-    products.append({ "category": category, "title": title, "price": price.text, "link": link})
+    #in stock
+    stock = soup.find('p', {'class': 'instock availability'})
+    stock = stock.text.replace("\n", "").replace(" ", "") 
+    is_in_stock = "In stock" if stock == "Instock" else "not available"
+    stocks_arr.append(is_in_stock)
+    
+    #review rating
+    star_rating = soup.find('p', {'class', 'star-rating'}).get('class')
+    ratings_arr.append(star_rating[1])
+    products.append(
+        { "category": category, 
+         "title": title, 
+         "price": price.text, 
+         "link": link, 
+         "in stock": is_in_stock, 
+         "ratings": star_rating[1]
+         })
    
-
-
-
 def write_to_csv() :
     try:
         with open('data.csv', 'w') as csvfile:
               writer = csv.writer(csvfile, delimiter=',')
               writer.writerow(field_names)
-              for category, title, price, link in zip(cat_arr, titles_arr, prices_arr, links_arr):
-                row = [category, title, price, link]
-                print(row)
+              for category, title, price, link, stock, rating in zip(cat_arr, titles_arr, prices_arr, links_arr, stocks_arr, ratings_arr):
+                row = [category, title, price, link, stock, rating]
                 writer.writerow(row)
     except IOError:
         print("I/O error")
 
-print(products)
-field_names = ["category", "title","price", "link"]
+
+field_names = ["category", "title","price", "link", "in stock", "ratings"]
 def dict_to_csv() :
     try:
         with open('data.csv', 'w') as csvfile:
