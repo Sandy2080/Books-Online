@@ -1,8 +1,19 @@
 import csv
+import requests
+from bs4 import BeautifulSoup
+url = "http://books.toscrape.com/index.html"
+page = requests.get(url)
+soup = BeautifulSoup(page.content, 'html.parser')
 
 books = []
+def page_number(page):
+    if page is not None:
+        current = page.text.replace("\n", "").split(" ")
+        current = list(filter(lambda c: c != "", current))
+        current.pop(0)
+    return current[0]
+
 def getBooks(articles): 
-    print("scraping ... ")
     for article in articles:
         ratings_arr = []
         link = 'http://books.toscrape.com/catalogue/' + article.find("div", {'class', 'image_container'}).a.get('href')
@@ -14,7 +25,7 @@ def getBooks(articles):
         star_rating = article.find('p', {'class', 'star-rating'}).get('class')
         ratings_arr.append(star_rating[1])
         books.append(
-            {  
+            { 
             "title": title, 
             "price": price.text, 
             "link": link, 
