@@ -5,8 +5,6 @@ url = "http://books.toscrape.com/index.html"
 page = requests.get(url)
 soup = BeautifulSoup(page.content, 'html.parser')
 
-
-
 def page_number(page):
     if page is not None:
         current = page.text.replace("\n", "").split(" ")
@@ -58,3 +56,15 @@ def dict_to_csv(filename, items, field_names) :
             writer.writerows(items)
     except IOError:
         print("I/O error")
+
+
+def get_books_by_category(categories):
+    for category, url in categories:
+        cat_articles = []
+        page = requests.get(url)
+        soup = BeautifulSoup(page.content, 'html.parser')
+        for article in soup.find_all('article', {'class': 'product_pod'}):
+            cat_articles.append(article)
+        books = getBooks(cat_articles) 
+        filename = str(category).lower()+".csv"
+        dict_to_csv("categories/"+filename, books, ["title","price", "link", "in stock", "ratings"])
