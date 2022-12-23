@@ -8,10 +8,11 @@ url = "http://books.toscrape.com/index.html"
 page = requests.get(url)
 soup = BeautifulSoup(page.content, 'html.parser')
 
-booksUrls = []
+
 articles = []
 all_articles = []
 all_books = []
+booksUrls = []
 pages_count = 1
 index = 1
  
@@ -38,19 +39,6 @@ while index < pages_count:
     booksUrls.append(url)
     index +=1
 
-
-def get_all_books():
-    _articles = []
-    for url in booksUrls:
-        page_number = url.split("-").pop(-1).split(".")[0]
-        print("scraping page#" + str(page_number))
-        page = requests.get(url)
-        soup = BeautifulSoup(page.content, 'html.parser')
-        for article in soup.find_all('article', {'class': 'product_pod'}):
-            _articles.append(article)
-    _articles = functions.getBooks(_articles)
-    return _articles
-
-all_books = get_all_books()
+all_books = functions.get_all_books(booksUrls)
 functions.dict_to_csv('all_data.csv', all_books, ["title","price", "link", "in stock", "ratings"])
  

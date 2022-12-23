@@ -6,6 +6,7 @@ page = requests.get(url)
 soup = BeautifulSoup(page.content, 'html.parser')
 
 books = []
+
 def page_number(page):
     if page is not None:
         current = page.text.replace("\n", "").split(" ")
@@ -33,6 +34,19 @@ def getBooks(articles):
             "ratings": star_rating[1]
         })
     return books
+
+
+def get_all_books(urls):
+    _articles = []
+    for url in urls:
+        page_number = url.split("-").pop(-1).split(".")[0]
+        print("scraping page#" + str(page_number))
+        page = requests.get(url)
+        soup = BeautifulSoup(page.content, 'html.parser')
+        for article in soup.find_all('article', {'class': 'product_pod'}):
+            _articles.append(article)
+    _articles = getBooks(_articles)
+    return _articles
 
 
 def dict_to_csv(filename, items, field_names) :
