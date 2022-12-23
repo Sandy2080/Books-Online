@@ -1,17 +1,8 @@
 import csv
-import requests
-from bs4 import BeautifulSoup
-url = "http://books.toscrape.com/index.html"
-page = requests.get(url)
-soup = BeautifulSoup(page.content, 'html.parser')
 
-articles = []
 books = []
-
-for article in soup.find_all('article', {'class': 'product_pod'}):
-    articles.append(article)
-
-def getBooks(): 
+def getBooks(articles): 
+    print("scraping ... ")
     for article in articles:
         ratings_arr = []
         link = 'http://books.toscrape.com/catalogue/' + article.find("div", {'class', 'image_container'}).a.get('href')
@@ -32,3 +23,12 @@ def getBooks():
         })
     return books
 
+
+def dict_to_csv(filename, items, field_names) :
+    try:
+        with open(filename, 'w') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=field_names)
+            writer.writeheader()
+            writer.writerows(items)
+    except IOError:
+        print("I/O error")
