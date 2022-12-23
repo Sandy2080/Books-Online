@@ -8,7 +8,7 @@ url = "http://books.toscrape.com/index.html"
 page = requests.get(url)
 soup = BeautifulSoup(page.content, 'html.parser')
 
-
+categories = {}
 articles = []
 all_articles = []
 all_books = []
@@ -21,11 +21,6 @@ for article in soup.find_all('article', {'class': 'product_pod'}):
     articles.append(article)
 
 books = functions.getBooks(articles)
-
-# for book in books:
-#     del book["page"]
-    
-
 functions.dict_to_csv('data.csv', books, ["title","price", "link", "in stock", "ratings"])
 
 # 2- scraping books of all pages of the catalogue
@@ -42,3 +37,29 @@ while index < pages_count:
 all_books = functions.get_all_books(booksUrls)
 functions.dict_to_csv('all_data.csv', all_books, ["title","price", "link", "in stock", "ratings"])
  
+# 3- scraping books from all categories
+for a in soup.find('div', {'class': 'side_categories'}).ul.find_all('a'):
+    urls = []
+    category = a.text.replace('\n', '').replace('  ', '')
+    if 'books_1' not in a.get('href'):
+        urls.append('http://books.toscrape.com/' + a.get('href'))
+    categories[category] = 'http://books.toscrape.com/' + a.get('href')
+
+
+def get_books(url):
+    cat_articles = []
+
+    page = requests.get(url)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    for article in soup.find_all('article', {'class': 'product_pod'}):
+        cat_articles.append(article)
+    return cat_articles
+    
+
+
+# for category, url in categories.items():  
+#     print(url)
+#     articles = get_books(url)
+#     books = functions.getBooks(articles) 
+#     filename = str(category).lower()+".csv"
+#     functions.dict_to_csv(filename, books, ["title","price", "link", "in stock", "ratings"])

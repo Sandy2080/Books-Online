@@ -5,7 +5,7 @@ url = "http://books.toscrape.com/index.html"
 page = requests.get(url)
 soup = BeautifulSoup(page.content, 'html.parser')
 
-books = []
+
 
 def page_number(page):
     if page is not None:
@@ -15,6 +15,7 @@ def page_number(page):
     return current[0]
 
 def getBooks(articles): 
+    books = []
     for article in articles:
         ratings_arr = []
         link = 'http://books.toscrape.com/catalogue/' + article.find("div", {'class', 'image_container'}).a.get('href')
