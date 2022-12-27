@@ -59,12 +59,17 @@ def dict_to_csv(filename, items, field_names) :
 
 
 def get_books_by_category(categories):
-    for category, url in categories:
+    _books = []
+    for category, _urls in categories:
         cat_articles = []
-        page = requests.get(url)
-        soup = BeautifulSoup(page.content, 'html.parser')
-        for article in soup.find_all('article', {'class': 'product_pod'}):
-            cat_articles.append(article)
-        books = get_all_books(cat_articles)
-        filename = str(category).lower()+".csv"
-        dict_to_csv("categories/"+filename, books, ["title","price", "link", "in stock", "ratings"])
+        for u in _urls:
+            p = requests.get(u)
+            s = BeautifulSoup(p.content, 'html.parser')
+            for article in s.find_all('article', {'class': 'product_pod'}):
+                cat_articles.append(article)
+            _books = getBooks(cat_articles)
+            # for b in _books:
+            #     b["link"] = b["link"].replace("/../../", "/")
+            #     _books.append(b)
+    filename = str(category).lower()+".csv"
+    dict_to_csv("categories/"+filename, _books, ["title","price", "link", "in stock", "ratings"])

@@ -62,6 +62,11 @@ for a in soup.find('div', {'class': 'side_categories'}).ul.find_all('a'):
 #     url = "http://books.toscrape.com/catalogue/page-" + str(index) + ".html"
 #     booksUrls.append(url)
 #     index +=1
+def update(i):
+    if i == 'http:':
+        return 'http:/'
+    else:
+        return i
 
 def get_all_categories_articles(url, count):
     _catUrls = []
@@ -69,6 +74,7 @@ def get_all_categories_articles(url, count):
     while index < count:
         _url = url.split("/")[ : -1]
         _url = list(filter(lambda i: i != "", _url))
+        _url = list(map(update, _url))
         _url = "/".join(_url) 
         _url = _url + "/" + "page-" + str(index) + ".html"
         _catUrls.append(_url)
@@ -83,17 +89,8 @@ for category, _url in categories.items():
         p = list(filter(lambda i: i != "", p))
         p_count = int(p[-1])
     _urls = get_all_categories_articles(_url, p_count)
-    _categories_links[category] = urls
+    _categories_links[category] = _urls
 
 # print(_categories_links)
     
-
-    # page = requests.get(url)
-    # soup = BeautifulSoup(page.content, 'html.parser')
-    # for article in soup.find_all('article', {'class': 'product_pod'}):
-    #     _articles.append(article)
-    # books = functions.get_all_books(url)
-    # all_books_by_category = getBooks(books)
-    # print(all_books_by_category)
-
-# functions.get_books_by_category(categories.items())
+functions.get_books_by_category(_categories_links.items())
