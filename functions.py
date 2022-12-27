@@ -39,7 +39,7 @@ def get_all_books(urls):
     _articles = []
     for url in urls:
         page_number = url.split("-").pop(-1).split(".")[0]
-        print("scraping page#" + str(page_number))
+        # print("scraping page#" + str(page_number))
         page = requests.get(url)
         soup = BeautifulSoup(page.content, 'html.parser')
         for article in soup.find_all('article', {'class': 'product_pod'}):
@@ -65,6 +65,6 @@ def get_books_by_category(categories):
         soup = BeautifulSoup(page.content, 'html.parser')
         for article in soup.find_all('article', {'class': 'product_pod'}):
             cat_articles.append(article)
-        books = getBooks(cat_articles) 
+        books = get_all_books(cat_articles)
         filename = str(category).lower()+".csv"
         dict_to_csv("categories/"+filename, books, ["title","price", "link", "in stock", "ratings"])
