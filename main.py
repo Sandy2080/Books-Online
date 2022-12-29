@@ -71,7 +71,7 @@ def update(i):
 def get_all_categories_articles(url, count):
     _catUrls = []
     index = 1
-    while index < count:
+    while index <= count:
         _url = url.split("/")[ : -1]
         _url = list(filter(lambda i: i != "", _url))
         _url = list(map(update, _url))
@@ -88,9 +88,10 @@ for category, _url in categories.items():
         p = cat_soup.find('li', {'class': 'current'}).text.replace("\n", "").split(" ")
         p = list(filter(lambda i: i != "", p))
         p_count = int(p[-1])
-    _urls = get_all_categories_articles(_url, p_count)
-    _categories_links[category] = _urls
+        _urls = get_all_categories_articles(_url, p_count)
+        _categories_links[category] = _urls
+    else:
+        _categories_links[category] = [_url]
 
-# print(_categories_links)
     
 functions.get_books_by_category(_categories_links.items())
