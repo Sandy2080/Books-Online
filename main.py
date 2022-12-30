@@ -3,11 +3,11 @@
 import requests
 from bs4 import BeautifulSoup
 import functions
+import helpers
 
 url = "http://books.toscrape.com/index.html"
 page = requests.get(url)
 soup = BeautifulSoup(page.content, 'html.parser')
-
 
 # 1- scraping books of home page
 articles = []
@@ -15,10 +15,10 @@ articles = []
 for article in soup.find_all('article', {'class': 'product_pod'}):
     articles.append(article)
 
-books = functions.getBooks(articles)
+books = functions.get_books(articles)
 functions.dict_to_csv('data.csv', books, ["title","price", "link", "in stock", "ratings"])
 
-# 2- scraping books of all pages of the catalogue
+# 2- scraping all books (every page)
 booksUrls = []
 pages_count = 1
 index = 1
@@ -37,9 +37,9 @@ while index < pages_count:
 all_books = functions.get_all_books(booksUrls)
 functions.dict_to_csv('all_data.csv', all_books, ["title","price", "link", "in stock", "ratings"])
  
-# 3- scraping books from all categories
+# 3- scraping all books from every category
 categories = {}
-_categories_links = {}
+categories_links = {}
 catUrls = []
 all_books_by_category = []
 _articles = []
@@ -53,34 +53,6 @@ for a in soup.find('div', {'class': 'side_categories'}).ul.find_all('a'):
     categories[category] = 'http://books.toscrape.com/' + a.get('href')
 
 
-# if soup.find('ul', {'class': 'pager'}):
-#    pages = soup.find('li', {'class': 'current'}).text.replace("\n", "").split(" ")
-#    pages = list(filter(lambda p: p != "", pages))
-#    pages_count = int(pages[-1])
-
-# while index < pages_count:
-#     url = "http://books.toscrape.com/catalogue/page-" + str(index) + ".html"
-#     booksUrls.append(url)
-#     index +=1
-def update(i):
-    if i == 'http:':
-        return 'http:/'
-    else:
-        return i
-
-def get_all_categories_articles(url, count):
-    _catUrls = []
-    index = 1
-    while index <= count:
-        _url = url.split("/")[ : -1]
-        _url = list(filter(lambda i: i != "", _url))
-        _url = list(map(update, _url))
-        _url = "/".join(_url) 
-        _url = _url + "/" + "page-" + str(index) + ".html"
-        _catUrls.append(_url)
-        index +=1
-    return _catUrls
-
 for category, _url in categories.items():
     cat_page = requests.get(_url)
     cat_soup = BeautifulSoup(cat_page.content, 'html.parser')
@@ -88,10 +60,9 @@ for category, _url in categories.items():
         p = cat_soup.find('li', {'class': 'current'}).text.replace("\n", "").split(" ")
         p = list(filter(lambda i: i != "", p))
         p_count = int(p[-1])
-        _urls = get_all_categories_articles(_url, p_count)
-        _categories_links[category] = _urls
+        _urls = functions.get_books_by_category(_url, p_count)
+        categories_links[category] = _urls
     else:
-        _categories_links[category] = [_url]
+        categories_links[category] = [_url]
 
-    
-functions.get_books_by_category(_categories_links.items())
+functions.get_all_books_by_category(categories_links.items())

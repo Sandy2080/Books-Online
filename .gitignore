@@ -1,6 +1,7 @@
 # dependencies
 /node_modules
 /categories
+/images
 /env
 .DS_Store
 all_data.csv
