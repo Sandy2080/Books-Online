@@ -6,7 +6,6 @@ url = "http://books.toscrape.com/index.html"
 page = requests.get(url)
 soup = BeautifulSoup(page.content, 'html.parser')
 
-
 # Transform
 def get_books(articles): 
     books = []
@@ -19,9 +18,9 @@ def get_books(articles):
         is_in_stock = "In stock" if stock == "Instock" else "not available"
         price = article.find('p', {'class': 'price_color'})
         star_rating = article.find('p', {'class', 'star-rating'}).get('class')
+        ratings_arr.append(star_rating[1])
         image_url = helpers.get_image_url('http://books.toscrape.com/', 'a img', article) 
         download_img(title, image_url)
-        ratings_arr.append(star_rating[1])
         books.append(
             { 
             "title": title, 

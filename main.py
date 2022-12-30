@@ -52,7 +52,6 @@ for a in soup.find('div', {'class': 'side_categories'}).ul.find_all('a'):
         urls.append('http://books.toscrape.com/' + a.get('href'))
     categories[category] = 'http://books.toscrape.com/' + a.get('href')
 
-
 for category, _url in categories.items():
     cat_page = requests.get(_url)
     cat_soup = BeautifulSoup(cat_page.content, 'html.parser')
